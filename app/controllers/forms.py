@@ -17,9 +17,11 @@ class AddProduct(FlaskForm):
     description = TextAreaField('description')
     image = FileField('image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
 
+
 class AddToCart(FlaskForm):
     quantidade = IntegerField('Quantidade')
     id = HiddenField('ID')
+
 
 class Checkout(FlaskForm):
     nome = StringField('Nome')
