@@ -1,12 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import DateTime
-from sqlalchemy import Table
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import Table, MetaData, Float, Integer,ForeignKey,DateTime, Boolean, String, Column
+
+from sqlalchemy import (Float, Integer
+                        ,ForeignKey,DateTime, Boolean, String, Column)
+
 from datetime import datetime
 from sqlalchemy import func
-from sqlalchemy.ext.automap import automap_base
 
 
 db = SQLAlchemy()
@@ -15,56 +15,56 @@ def configure_product(app):
     app.db = db
 
 
+class Product(db.Model):
+    __tablename__ = 'produtos'
+    __bind_key__ = 'BIGDATA'
+    __table_args__ = {"schema": "dbo"}
+    id = Column(db.Integer, primary_key=True)
+    nome = Column(db.String,nullable=True)
+    preco = Column(db.Float,nullable=True)
+    saldo = Column(db.Integer,nullable=True)
+    descricao = Column(db.String,nullable=True)
+    marca = Column(db.String,nullable=True)
+    imagem = Column(db.String,nullable=True)
+    orders = Column(db.Integer,ForeignKey("Order.id"), nullable=False)
 
 
+class Order(db.Model):
+      __tablename__ = 'order'
+      __bind_key__ = 'BIGDATA'
+      __table_args__ = {"schema": "dbo"}
+      id = db.Column(db.Integer, primary_key=True)
+      referencia = db.Column(db.String)
+      nome = db.Column(db.String)
+      sobrenome = db.Column(db.String)
+      telefone = db.Column(db.String,nullable=True)
+      email = db.Column(db.String,nullable=True)
+      endereco = db.Column(db.String,nullable=True)
+      cidade = db.Column(db.String,nullable=True)
+      estado = db.Column(db.String,nullable=True)
+      pais = db.Column(db.String,nullable=True)
+      status = db.Column(db.String,nullable=True)
+      pagamento = db.Column(db.String,nullable=True)
+      orders = db.relationship(db.Integer, back_populates="Product")
+      
 
-Product = db.Table(
-"Product",
-db.metadata,
-Column('id',Integer,primary_key=True),
-Column('nome',String),
-Column('preco',Float),
-Column('saldo',Float),
-Column('descricao',String),
-Column('marca',String),
-Column('imagem',String),
-Column('orders', Integer,ForeignKey("Order.id"), nullable=False),
-schema="dbo",extend_existing=True)
-
-
-Order = db.Table(
-"Order",
-db.metadata,
-Column('id',Integer,primary_key=True),
-Column('referencia',String),
-Column('nome',Float),
-Column('sobrenome',Float),
-Column('telefone',String),
-Column('email',String),
-Column('endereco',String),
-Column('cidade',String),
-Column('estado',String),
-Column('pais',String),
-Column('status',String),
-Column('pagamento',String),
-Column('orders',back_populates="Product"),
-schema="dbo",extend_existing=True)
+      def order_total(self):
+                return db.session.query(
+                     db.func.sum(OrderItem.quantidade * Product.preco)).join(
+                     Product).filter(OrderItem.order_id == self.id).scalar() + 1000
+      
+      def quantity_total(self):
+        return db.session.query(
+             db.func.sum(OrderItem.quantidade)).filter(OrderItem.order_id == self.id).scalar()
 
 
-def order_total(self):
-        return db.session.query(db.func.sum(Order_Item.quantidade * Product.preco)).join(Product).filter(Order_Item.order_id == self.id).scalar() + 1000
+class OrderItem(db.Model):
+     __tablename__ = 'order_item'
+     __bind_key__ = 'BIGDATA'
+     __table_args__ = {"schema": "dbo"}
+     id = db.Column(db.Integer, primary_key=True,nullable=False)
+     order_id = db.Column(db.Integer,ForeignKey('order.id'),nullable=False)
+     product_id = db.Column(db.Integer,ForeignKey('product.id'),nullable=False)
+     quantidade = db.Column(db.Integer,nullable=True)
 
-def quantity_total(self):
-        return db.session.query(db.func.sum(Order_Item.quantidade)).filter(Order_Item.order_id == self.id).scalar()
-
-
-
-Order_Item = db.Table(
-"Order_Item",
-db.metadata,
-Column('id',Integer,primary_key=True),
-Column('order_id',Integer,ForeignKey('order.id')),
-Column('product_id',Integer,ForeignKey('product.id')),
-Column('quantidade',Integer),
-schema="dbo",extend_existing=True)
-
+     
