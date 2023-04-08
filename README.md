@@ -13,11 +13,11 @@ photos = UploadSet('photos', IMAGES)
 configure_uploads(current_app, photos)
 
 class AddProduct(FlaskForm):
-    name = StringField('Name')
-    price = IntegerField('price')
-    stock = IntegerField('stock')
-    description = TextAreaField('description')
-    image = FileField('image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
+    name = StringField('Nome')
+    price = IntegerField('preco')
+    stock = IntegerField('Estoque')
+    description = TextAreaField('descricao')
+    image = FileField('imagens', validators=[FileAllowed(IMAGES, 'None')])
 
 
 class AddToCart(FlaskForm):
