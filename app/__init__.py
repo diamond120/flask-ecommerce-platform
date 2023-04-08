@@ -17,17 +17,15 @@ def create_app() -> Flask:
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = SECRET_KEY
     
-    #https://docs.sqlalchemy.org/en/20/tutorial/metadata.html
-   
+
     db.init_app(app)
     
     with app.app_context():
+
         from .routes.routes import ecommerce_bp
        
-        db.create_all()
-       
+        
         app.register_blueprint(ecommerce_bp)
-
-        db.create_all()
+     
 
     return app

@@ -13,10 +13,10 @@ except ImportError:
     from typing_extensions import Literal
 
 from sqlalchemy import select
-from ..models.models import Product, Order,OrderItem
-from ..controllers.forms import AddToCart,AddProduct, Checkout, photos,configure_uploads
-from dotenv import load_dotenv
+from ..models.models import Product,AddToCart,AddProduct, Checkout, photos,configure_uploads,Order,OrderItem
 
+from dotenv import load_dotenv
+from flask import jsonify
 from urllib.parse import urlparse
 
 load_dotenv()
@@ -36,60 +36,65 @@ ecommerce_bp = Blueprint("ecommerce", __name__)
 current_app.config['UPLOADED_PHOTOS_DEST'] = os.getenv('IMAGENS')
 
 
-from typing import TypeVar, List
+from typing import TypeVar
 
 T = TypeVar('T')
 
-def handle_cart() -> T:
-    products = list[dict[str,str]]
+
+def handle_cart():
+    products = []
     grand_total = 0
     index = 0
     quantity_total = 0
 
     for item in session['cart']:
-        product = Product.query.filter_by(id=item['id']).first()
+        product = Product.query.filter_by(cod_produto=item['cod_produto']).first()
 
         quantidade = int(item['quantidade'])
-        total = quantidade * product.price
+        total = quantidade * product.preco
         grand_total += total
 
         quantity_total += quantidade
 
-        products.append({'id' : product.id, 'nome' : product.nome, 'preco' : product.preco, 'imagem' : product.imagem, 'quantidade' : quantidade, 'total': total,'index': index})
+        products.append({'cod_produto' : product.cod_produto,
+                          'nome' : product.nome, 'preco' :  product.preco,
+                            'imagem' : product.imagem, 'quantidade' : quantidade, 'total': total, 'index': index})
         index += 1
     
     grand_total_plus_shipping = grand_total + 1000
 
     return products, grand_total, grand_total_plus_shipping, quantity_total
 
-
 @ecommerce_bp.route('/')
-def index() -> str:
-    #products = Product.query.all()
-    #, products=products
+def index():
+    #products = Product.query.limit(1).all()
+    #print(products)
+    #products=products
     return render_template('index.html')
 
-@ecommerce_bp.route('/product/<id>')
-def product(id) -> str:
-    product = Product.query.filter_by(id=id).first()
+
+
+@ecommerce_bp.route('/product/<cod_produto>')
+def product(cod_produto):
+    product = Product.query.filter_by(cod_produto=cod_produto).first()
 
     form = AddToCart()
 
     return render_template('view-product.html', product=product, form=form)
 
-
-@ecommerce_bp.route('/quick-add/<id>')
-def quick_add(id: int) -> Response:
+@ecommerce_bp.route('/quick-add/<cod_produto>')
+def quick_add(cod_produto):
     if 'cart' not in session:
         session['cart'] = []
 
-    session['cart'].append({'id' : id, 'quantidade' : 1})
+    session['cart'].append({'cod_produto' : cod_produto, 'quantidade' : 1})
     session.modified = True
 
-    return redirect(url_for('ecommerce.index'))
+    return redirect(url_for('index'))
+
 
 @ecommerce_bp.route('/add-to-cart', methods=['POST'])
-def add_to_cart() -> Response:
+def add_to_cart():
     if 'cart' not in session:
         session['cart'] = []
 
@@ -97,17 +102,20 @@ def add_to_cart() -> Response:
 
     if form.validate_on_submit():
 
-        session['cart'].append({'id' : form.id.data, 'quantidade' : form.quantidade.data})
+        session['cart'].append({'cod_produto' : form.id.data, 'quantidade' : form.quantidade.data})
         session.modified = True
 
-    return redirect(url_for('ecommerce.index'))
-
+    return redirect(url_for('index'))
 
 @ecommerce_bp.route('/cart')
-def cart() -> str:
+def cart():
     products, grand_total, grand_total_plus_shipping, quantity_total = handle_cart()
+    
 
-    return render_template('cart.html', products=products, grand_total=grand_total, grand_total_plus_shipping=grand_total_plus_shipping, quantity_total=quantity_total)
+    return render_template('cart.html', products=products, grand_total=grand_total
+                           , grand_total_plus_shipping=grand_total_plus_shipping
+                           , quantity_total=quantity_total)
+   
 
 @ecommerce_bp.route('/remove-from-cart/<index>')
 def remove_from_cart(index: T) -> Response:
@@ -144,40 +152,42 @@ def checkout() -> (Response | str):
             pass
         return redirect(url_for('ecommerce.index'))
 
-    return render_template('checkout.html', form=form, grand_total=grand_total, grand_total_plus_shipping=grand_total_plus_shipping, quantity_total=quantity_total)
+    return render_template('checkout.html', form=form, grand_total=grand_total
+                           ,grand_total_plus_shipping=grand_total_plus_shipping
+                           ,quantity_total=quantity_total)
 
 @ecommerce_bp.route('/admin/')
 def admin() -> str:
-    try:
-        products = Product.query.all()
-    except:
-        pass
-    try:
-        products_in_stock = Product.query.filter(Product.saldo > 0).count()
+  
+        #products = Product.query.all()
 
-        orders = Order.query.all()
+    
+        #products_in_stock = Product.query.filter(Product.saldo > 0).count()
 
+        #orders = Order.query.all()
+        #, orders=orders
+        #products=products
         return render_template('admin/index.html'
-                            , admin=True, products=products, products_in_stock=products_in_stock, orders=orders)
-
-    except:
-        return "Notfound"
+                            , admin=True)
+    # products_in_stock=products_in_stock
+    
 
 @ecommerce_bp.route('/admin/add', methods=['GET', 'POST'])
-def add() -> (Response | str):
+def add():
     form = AddProduct()
 
     if form.validate_on_submit():
-        image_url = photos.url(photos.save(form.image.data))
+        """Salva Imagem"""
+        #image_url = photos.url(photos.save(form.image.data))
         print(form.name.data)
         print(form.price.data)
         print(form.stock.data)
         print(form.description.data)
-        print(form.image.data)
-
+        #print(form.image.data)
+        #, image=image_url
         new_product = Product(name=form.name.data, 
                               price=form.price.data, stock=form.stock.data, 
-                              description=form.description.data, image=image_url)
+                              description=form.description.data)
 
         db.session.add(new_product)
         db.session.commit()
