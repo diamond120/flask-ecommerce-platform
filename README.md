@@ -85,6 +85,21 @@ def logout():
 
 
 
+```Python
+def register_handlers(app):
+    if current_app.config.get('DEBUG') is True:
+        current_app.logger.debug('Skipping error handlers in Debug mode')
+        return
 
+    @current_app.errorhandler(404)
+    def not_found_error(error):
+        return jsonify({"Error":"not found error"}), 404
+
+    @current_app.errorhandler(500)
+    def internal_error(error):
+        return jsonify({"Error":"internal error"}), 500
+
+```
+<br>Error Handlers<br/>
 
 <br>Projeto ainda esta em desenvolvimento<br/>
