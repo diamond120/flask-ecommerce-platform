@@ -7,14 +7,11 @@ from config import SQLALCHEMY_DATABASE_URI,SECRET_KEY,UPLOADED_PHOTOS_DEST
 from flask import  request, make_response, jsonify,current_app, Response, abort
 
 
-
 import time
 def register_handlers(app):
     if app.config.get('DEBUG') is True:
         app.logger.debug('Skipping error handlers in Debug mode')
         return
-
-
 
 
 #Handlers
@@ -45,7 +42,6 @@ def register_handlers(app):
         return jsonify({"Error":"Method not found"}), 400
 
 
-
 db = SQLAlchemy()
 
 def create_app() -> Flask:
@@ -58,6 +54,17 @@ def create_app() -> Flask:
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = SECRET_KEY
     
+    '''
+    app.config.from_mapping(
+    CELERY=dict(
+        broker_url="redis://localhost",
+        result_backend="redis://localhost",
+        task_ignore_result=True,
+        ),
+        )
+    '''
+
+    #celery_app = celery_init_app(app)
     db.init_app(app)
     """
     Essas funções precisam ser passadas dentro da Factory
