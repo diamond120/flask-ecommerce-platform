@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+  postgresql:
+    image: postgrescompose
+    volumes:
+      - .app/database/vol
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: admin
+      POSTGRES_DB: teste
+    ports:
+      - "5433:5432"
+    networks:
+      - flask-bridge
+  backend:
+    depends_on:
+      - postgresql
+    image: flaskapp
+    ports:
+      - "5000:5000"  
+    restart: always
+
+    environment:
+      SECRET_KEY: 192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf
+      DATABASE_URL: postgresql://123:admin@localhost:5432/teste
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: admin
+      POSTGRES_DB: teste
+    networks:
+      - flask-bridge
+
+
+volumes:
+  db_data: {}
+networks:
+  flask-bridge:

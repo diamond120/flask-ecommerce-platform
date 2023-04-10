@@ -5,7 +5,7 @@ from flask import Flask
 from flask_login import LoginManager
 from config import SQLALCHEMY_DATABASE_URI,SECRET_KEY,UPLOADED_PHOTOS_DEST
 from flask import  request, make_response, jsonify,current_app, Response, abort
-
+from flask_migrate import Migrate
 
 import time
 def register_handlers(app):
