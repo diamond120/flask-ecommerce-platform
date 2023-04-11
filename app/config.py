@@ -1,8 +1,6 @@
 from dotenv import load_dotenv
 import os
 import urllib
-import pyodbc
-import os
 from urllib.parse import quote_plus
 from urllib import parse
 from dotenv import load_dotenv

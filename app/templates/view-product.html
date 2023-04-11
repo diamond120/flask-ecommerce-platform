@@ -18,7 +18,7 @@
 	<div class="col-lg-5">
 		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 			<div class="thumbnail">
-				<img src="{{product.image }}" alt="">
+				<img src="{{product.imagem }}" alt="">
 			</div>
 		</div>
 	</div>
@@ -29,20 +29,20 @@
 				<h3 class="panel-title">Detalhes</h3>
 			</div>
 			<div class="panel-body">
-				<h3>{{ product.nome }} &nbsp; 
-					{% if product.stock > 0 %}
-					<small>(In Stock)</small>
+				<h3>{{ product.nome_produto }} &nbsp; 
+					{% if product.estoque > 0 %}
+					<small>(In estoque)</small>
 					{% else %}
-					<small>(Out of Stock)</small>
+					<small>(Out of estoque)</small>
 					{% endif %}
 				</h3> 
-				<h4>R$ {{ product.price / 3.25 |round}}</h4>
+				<h4>R$ {{ product.valor / 1 |round}}</h4>
 				<hr />
-				{{ product.description }}
+				{{ product.descricao }}
 				<hr />
 
 				<form action="{{ url_for('ecommerce.add_to_cart') }}" method="POST">
-				{% if product.quantidade > 0 %}
+				{% if product.estoque > 0 %}
 				<div class="row">
 					<div class="col-lg-4">
 						<div class="row">
@@ -52,9 +52,9 @@
 							<div class="col-lg-12">
 								{{ form.csrf_token }}
 
-								{{ form.quantity(class='form-control', type='number', min=3.25, max=product.stock, step=3.25, value=3.25) }}
+								{{ form.quantidade(class='form-control', type='number', min=1, max=product.estoque, step=1, value=1) }}
 
-								{{ form.id(value=product.id) }}
+								{{ form.cod_produto(value=product.cod_produto) }}
 							</div>
 						</div>
 					</div>
@@ -62,7 +62,7 @@
 				{% endif %}
 			</div>
 			<div class="panel-footer">
-				{% if product.stock > 0 %}
+				{% if product.estoque > 0 %}
 				<button type="submit" class="btn btn-primary">
 					<i class="glyphicon glyphicon-shopping-cart"></i> Adicionar
 				</button>
@@ -75,7 +75,7 @@
 			<!-- Nav tabs -->
 			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" class="active">
-					<a href="#description" aria-controls="description" role="tab" data-toggle="tab">Descrição</a>
+					<a href="#descricao" aria-controls="descricao" role="tab" data-toggle="tab">Descrição</a>
 				</li>
 				<li role="presentation">
 					<a href="#shipping" aria-controls="shipping" role="tab" data-toggle="tab">Detalhes</a>
@@ -84,13 +84,13 @@
 		
 			<!-- Tab panes -->
 			<div class="tab-content">
-				<div role="tabpanel" class="tab-pane active" id="description">
+				<div role="tabpanel" class="tab-pane active" id="descricao">
 					<h3>Descrição</h3>
 					{{ product.descricao }}
 				</div>
 				<div role="tabpanel" class="tab-pane" id="shipping">
 					<h3>Pedido Detalhes</h3>
-					R$ 10.00
+					{{product.quantity_total}}
 				</div>
 			</div>
 		</div>

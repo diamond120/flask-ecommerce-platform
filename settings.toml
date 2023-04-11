@@ -1,0 +1,40 @@
+[default]
+DEBUG = false
+
+FLASK_ADMIN_TEMPLATE_MODE = "bootstrap3"
+FLASK_ADMIN_SWATCH = 'cerulean'
+SECRET_KEY = "mlernngkrjgnkrgjadkfbsdkjbfbh"
+EXTENSIONS = [
+    "app.blueprints.routes.routes:init_app",
+    "app.extensions.database:init_app",
+    "app.extensions.admin:init_app",
+    "app.extensions.commands:init_app"
+    
+   
+]
+
+
+[development]
+EXTENSIONS = [
+    "dynaconf_merge_unique"  # to reuse extensions list from [default]
+]
+TEMPLATES_AUTO_RELOAD = true
+DEBUG = true
+DEBUG_TOOLBAR_ENABLED = true
+DEBUG_TB_INTERCEPT_REDIRECTS = false
+DEBUG_TB_PROFILER_ENABLED = true
+DEBUG_TB_TEMPLATE_EDITOR_ENABLED = true
+DEBUG_TB_PANELS = [
+    "flask_debugtoolbar.panels.versions.VersionDebugPanel",
+    "flask_debugtoolbar.panels.sqlalchemy.SQLAlchemyDebugPanel",
+    "flask_debugtoolbar.panels.timer.TimerDebugPanel",
+    "flask_debugtoolbar.panels.headers.HeaderDebugPanel",
+    "flask_debugtoolbar.panels.request_vars.RequestVarsDebugPanel",
+    "flask_debugtoolbar.panels.template.TemplateDebugPanel",
+    "flask_debugtoolbar.panels.route_list.RouteListDebugPanel",
+    "flask_debugtoolbar.panels.logger.LoggingPanel",
+    "flask_debugtoolbar.panels.profiler.ProfilerDebugPanel",
+    "flask_debugtoolbar.panels.config_vars.ConfigVarsDebugPanel"
+]
+
+
