@@ -18,7 +18,6 @@ def configure_product(app):
     app.db = db
 
 
-
 photos = UploadSet('photos', IMAGES)
 configure_uploads(current_app, photos)
 
