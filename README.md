@@ -5,11 +5,7 @@
 <br>ativar: venv\Scripts\activate<br/>
 <br>instalar dependencias: pip freeze > requirements.txt<br/>
 
-<br>export FLASK_APP='app:create_app()'<br/>
-<br>flask db init </br>
-<br>flask db migrate -m "Initial migration."</br>
-<br>flask db upgrade</br>
-<br>flask run --host 0.0.0.0 --port 8089</br>
+
 
 ```Python
 photos = UploadSet('photos', IMAGES)
